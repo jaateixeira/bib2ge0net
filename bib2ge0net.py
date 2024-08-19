@@ -2,7 +2,6 @@ import argparse
 import networkx as nx
 import matplotlib.pyplot as plt
 import bibtexparser
-from bibtexparser.bparser import BibTexParser
 from geopy.geocoders import Nominatim
 import requests
 from mpl_toolkits.basemap import Basemap
@@ -16,9 +15,8 @@ install()
 
 def parse_bib_file(file_path):
     logger.info(f"Parsing BibTeX file: {file_path}")
-    parser = BibTexParser(common_strings=True)
     with open(file_path) as bibtex_file:
-        bib_database = bibtexparser.load(bibtex_file, parser=parser)
+        bib_database = bibtexparser.load(bibtex_file)
     return bib_database.entries
 
 def get_affiliations_from_doi(doi):
@@ -127,4 +125,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.bib_file)
+
 
