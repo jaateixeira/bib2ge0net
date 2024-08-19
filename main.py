@@ -1,11 +1,16 @@
+import argparse
 import networkx as nx
 import matplotlib.pyplot as plt
 import bibtexparser
 from geopy.geocoders import Nominatim
 import requests
 from mpl_toolkits.basemap import Basemap
+from loguru import logger
+from rich.console import Console
+from rich.table import Table
 
 def parse_bib_file(file_path):
+    logger.info(f"Parsing BibTeX file: {file_path}")
     with open(file_path) as bibtex_file:
         bib_database = bibtexparser.load(bibtex_file)
     return bib_database.entries
@@ -22,6 +27,7 @@ def get_affiliations_from_doi(doi):
             if name:
                 affiliations[name] = author.get('affiliation', [])
         return affiliations
+    logger.warning(f"Failed to retrieve affiliations from DOI: {doi}")
     return {}
 
 def extract_authors_and_affiliations(entries):
@@ -54,6 +60,7 @@ def get_coordinates(affiliation):
     location = geolocator.geocode(affiliation)
     if location:
         return (location.latitude, location.longitude)
+    logger.warning(f"Failed to geocode affiliation: {affiliation}")
     return None
 
 def plot_geographical_network(authors_affiliations):
@@ -91,8 +98,27 @@ def plot_geographical_network(authors_affiliations):
 
     plt.show()
 
-if __name__ == "__main__":
-    bib_file_path = 'path_to_your_bib_file.bib'
+def main(bib_file_path):
+    logger.info(f"Starting script with BibTeX file: {bib_file_path}")
     entries = parse_bib_file(bib_file_path)
     authors_affiliations = extract_authors_and_affiliations(entries)
+
+    console = Console()
+    table = Table(title="Authors and Affiliations")
+    table.add_column("Author", justify="left", style="cyan")
+    table.add_column("Affiliations", justify="left", style="magenta")
+
+    for author, affiliations in authors_affiliations.items():
+        table.add_row(author, ", ".join(affiliations))
+
+    console.print(table)
+
     plot_geographical_network(authors_affiliations)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Plot geographical social networks from a BibTeX file.")
+    parser.add_argument("bib_file", type=str, help="Path to the BibTeX file")
+    args = parser.parse_args()
+
+    main(args.bib_file)
+
