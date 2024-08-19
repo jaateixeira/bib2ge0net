@@ -2,17 +2,23 @@ import argparse
 import networkx as nx
 import matplotlib.pyplot as plt
 import bibtexparser
+from bibtexparser.bparser import BibTexParser
 from geopy.geocoders import Nominatim
 import requests
 from mpl_toolkits.basemap import Basemap
 from loguru import logger
 from rich.console import Console
 from rich.table import Table
+from rich.traceback import install
+
+# Install rich traceback handler
+install()
 
 def parse_bib_file(file_path):
     logger.info(f"Parsing BibTeX file: {file_path}")
+    parser = BibTexParser(common_strings=True)
     with open(file_path) as bibtex_file:
-        bib_database = bibtexparser.load(bibtex_file)
+        bib_database = bibtexparser.load(bibtex_file, parser=parser)
     return bib_database.entries
 
 def get_affiliations_from_doi(doi):
