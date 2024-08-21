@@ -82,8 +82,6 @@ def extract_authors_and_affiliations(entries):
     authors_affiliations = {}
     for entry in entries:
         logger.info(f"citation_key = {entry['ID']}")
-
-        exit()
         
         doi = entry.get('doi', '')
         if doi:
