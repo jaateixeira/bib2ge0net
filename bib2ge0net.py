@@ -1,22 +1,66 @@
+#!/usr/bin/env python3
+# By Jose Teixeira <jose.teixeira@abo.fi>
+
 import argparse
+
 import networkx as nx
 import matplotlib.pyplot as plt
-import bibtexparser
+
+
 from geopy.geocoders import Nominatim
 import requests
+
 from mpl_toolkits.basemap import Basemap
+
 from loguru import logger
+from rich.logging import RichHandler
 from rich.console import Console
 from rich.table import Table
 from rich.traceback import install
+from rich.pretty import Pretty
+
+
+
+
+# Use bibtexparser for parsing, manipulating, and writing BibTeX files.
+import bibtexparser
+
+#  Pybtex is a more comprehensive library that not only parses BibTeX files but also supports rendering bibliographies into various formats, such as LaTeX, HTML, or plain text
+from pybtex.database.input import bibtex
+from pybtex.database import parse_file, BibliographyData, Entry
+
 
 # Install rich traceback handler
-install()
+from rich.traceback import install
+
+# Install the Rich Traceback handler with custom options
+install(
+    show_locals=True,  # Show local variables in the traceback
+    suppress=[__name__],
+    # suppress=[your_module],  # Suppress tracebacks from specific modules
+    max_frames=5,  # Limit the number of frames shown
+    width=100,  # Set the width of the traceback display
+    extra_lines=3,  # Show extra lines of code around the error
+    theme="solarized-dark",  # Use a different color theme
+    word_wrap=True,  # Enable word wrapping for long lines
+)
+
+
+
+# Create a Rich console
+console = Console()
+
+# Add RichHandler to the loguru logger
+logger.remove()  # Remove the default logger
+logger.add(
+    RichHandler(console=console, show_time=True, show_path=True, rich_tracebacks=True),
+    format="{message}",  # You can customize this format as needed
+    level="DEBUG",  # Set the desired logging level
+)
 
 def parse_bib_file(file_path):
     logger.info(f"Parsing BibTeX file: {file_path}")
-    with open(file_path) as bibtex_file:
-        bib_database = bibtexparser.load(bibtex_file)
+    bib_database = bibtexparser.parse_file(file_path)
     return bib_database.entries
 
 def get_affiliations_from_doi(doi):
@@ -37,6 +81,10 @@ def get_affiliations_from_doi(doi):
 def extract_authors_and_affiliations(entries):
     authors_affiliations = {}
     for entry in entries:
+        logger.info(f"citation_key = {entry['ID']}")
+
+        exit()
+        
         doi = entry.get('doi', '')
         if doi:
             affiliations = get_affiliations_from_doi(doi)
@@ -126,4 +174,8 @@ if __name__ == "__main__":
 
     main(args.bib_file)
 
-
+    # Example logging messages
+    # - logger.debug("This is a debug message.")
+    # - logger.info("This is an info message.")
+    # - logger.warning("This is a warning message.")
+    # - logger.error("This is an error message.")
