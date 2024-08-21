@@ -98,7 +98,12 @@ def extract_authors_and_affiliations(entries):
     return authors_affiliations
 
 def extract_affiliations_from_bibtex(entry):
-    authors = entry.get('author', '').split(' and ')
+    logger.info(f"extracting affiliation from bibtex file = {entry['ID']}")
+    logger.debug(f"authors = {entry.get('author', '')}")
+
+    
+    authors = str(entry.get('author', '')).split('and')
+    
     affiliations = entry.get('affiliation', '').split(', ')
     author_affiliations = {}
     for author in authors:
