@@ -8,7 +8,7 @@ If the entry does not have a doi, it it will look for the affiliation key.
 
 Here are two examples of entries with a affiliation key
 
-'''
+```
 @book{key1,
   author = {Author, A.},
   year = {2021},
@@ -26,6 +26,4 @@ Here are two examples of entries with a affiliation key
   address = {Address of the Publisher},
   affiliation = {University of XYZ, University of CBA}
 }
-
-
-'''
+```
